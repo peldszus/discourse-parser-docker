@@ -1,15 +1,13 @@
-#FROM python:2.7.8
 FROM java:7
 
 MAINTAINER Eugene Tulika "vranen@gmail.com"
 
-# Install Python.
-RUN \
-  apt-get update && \
-  apt-get install -y python python-dev python-pip python-virtualenv && \
-  rm -rf /var/lib/apt/lists/*
 
-RUN wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz \ 
+RUN apt-get update \
+	&& apt-get install -y python python-dev python-pip python-virtualenv \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz \
 	&& tar -zxf PyYAML-3.09.tar.gz \
 	&& cd PyYAML-3.09 \
 	&& python setup.py install \
@@ -35,12 +33,13 @@ RUN wget https://github.com/downloads/chokkan/liblbfgs/liblbfgs-1.10.tar.gz \
 
 RUN cd gCRF_dist/tools/crfsuite/crfsuite-0.12 \
 	&& chmod +x configure \
-        && ./configure --prefix=$HOME/local --with-liblbfgs=$HOME/local \
+	&& sleep 1 \
+	&& ./configure --prefix=$HOME/local --with-liblbfgs=$HOME/local \
 	&& make \
 	&& make install
 
-RUN cd gCRF_dist/tools/crfsuite && \
-	cp $HOME/local/bin/crfsuite crfsuite-stdin \
+RUN cd gCRF_dist/tools/crfsuite \
+	&& cp $HOME/local/bin/crfsuite crfsuite-stdin \
 	&& chmod +x crfsuite-stdin
 
 RUN cd gCRF_dist/tools/crfsuite \
