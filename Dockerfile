@@ -1,7 +1,10 @@
 FROM java:7
 
-MAINTAINER Eugene Tulika "vranen@gmail.com"
+# Based on the Dockerfile vrann/discourse-parser-docker
+# from Eugene Tulika "vranen@gmail.com"
+# Thanks to Wladimir for subprocess patch
 
+MAINTAINER Andreas Peldszus "peldszus@uni-potsdam.de"
 
 RUN apt-get update \
 	&& apt-get install -y python python-dev python-pip python-virtualenv \
@@ -42,8 +45,16 @@ RUN cd gCRF_dist/tools/crfsuite \
 	&& cp $HOME/local/bin/crfsuite crfsuite-stdin \
 	&& chmod +x crfsuite-stdin
 
+# Test CRF suite
 RUN cd gCRF_dist/tools/crfsuite \
 	&& ./crfsuite-stdin tag -pi -m ../../model/tree_build_set_CRF/label/intra.crfsuite test.txt
 
-CMD ["/bin/sh"]        
+# Patch crfsuite wrapper
+ADD subprocess.patch .
+RUN patch /gCRF_dist/src/classifiers/crf_classifier.py < /subprocess.patch
 
+# Test discourse parser
+RUN cd gCRF_dist/src \
+	&& python sanity_check.py
+
+CMD ["/bin/bash"]
