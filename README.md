@@ -1,6 +1,6 @@
-# Dockerfile for Discourse Parser
+# Dockerfile for the Feng 2014 RST Parser
 =====
-Dockerfile for the RST-style Discourse Parser
+Dockerfile for the Feng 2014 RST Parser
 
 DEVELOPERS
 -----
@@ -20,11 +20,15 @@ GENERAL INFOMRATION
 * This RST-style discourse parser produces discourse tree structure on full-text level, given a raw text. No prior sentence splitting or any sort of preprocessing is expected. The program runs on Linux systems.
 * The overall software work flow is similar to the one described in our paper (ACL 2014). However, to guarantee further efficiency, we remove the post-editing component from the workflow, and remove the set of entity-based transaction features from our feature set. Moreover, both structure and relation classification models are now implemented using CRFSuite.
 
+CHANGES:
+-----
+* This Dockerfile includes a fix for a bug in the crf wrapper blocking the parser pipeline in some Ubuntu environments. Thanks Wladimir!
+
 USAGE
 -----
 ```
-docker pull vrann/discourse-parser-docker
-docker run -v /Path/to/text/files:/samples -i -t $container-id
+docker build -t feng-2014-rstparser .
+docker run -v /Path/to/text/files:/samples -i -t feng-2014-rstparser
 cd gCRF_dist/src
 python parse.py /samples/F0001.txt
 ```
